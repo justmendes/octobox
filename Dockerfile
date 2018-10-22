@@ -1,8 +1,9 @@
 FROM ruby:2.5.3-alpine
 
+ENV RAILS_ENV production
+
 # Install and update all dependencies (os, ruby)
 WORKDIR /usr/src/app
-
 # =============================================
 # System layer
 
@@ -20,9 +21,10 @@ RUN apk add --update \
     mysql-dev \
     tzdata \
     curl-dev \
+    yarn \
  && rm -rf /var/cache/apk/* \
  && bundle config --global frozen 1 \
- && bundle install --without test production --jobs 2 \
+ && bundle install --without test development --jobs 2 \
  && gem install foreman
 
 # ========================================================
@@ -33,9 +35,10 @@ COPY . /usr/src/app
 
 # * Generate the docs
 # * Make files OpenShift conformant
-RUN RAILS_ENV=development bin/rails api_docs:generate \
- && chgrp -R 0 /usr/src/app \
+RUN chgrp -R 0 /usr/src/app \
  && chmod -R g=u /usr/src/app
+
+RUN bundle exec rake assets:precompile
 
 # Startup
 CMD ["bin/docker-start"]

@@ -12,7 +12,7 @@ rm -rf tmp/pids
 
 env_boolean() {
   local env=$1
-  if [ "$env" == "true" ] || [ "$env" == "1" ]; then
+  if [[ "$env" == "true" ]] || [[ "$env" == "1" ]]; then
     return 0
   else
     return 1
